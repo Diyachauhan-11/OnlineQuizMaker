@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Result</title>
+  <style>
+    body {
+      background-color: #e0f7fa;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      position: relative;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 700px;
+      margin: auto;
+      text-align: center;
+    }
+    button {
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 10px 20px;
+      margin: 10px 5px;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    .logout-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      padding: 8px 12px;
+      background: crimson;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .question-container {
+      margin: 20px 0;
+      text-align: left;
+    }
+    .question-container p {
+      font-weight: bold;
+    }
+    .question-container ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .question-container li {
+      margin-bottom: 8px;
+    }
+    .correct {
+      color: green;
+      font-weight: bold;
+    }
+    .incorrect {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+  <div class="container">
+    <h2>Quiz Result</h2>
+    <div id="resultSummary"></div>
+    <div id="questionResults"></div>
+    <button onclick="goBack()">Back to Quizzes</button>
+  </div>
+  <script>
+    if (!localStorage.getItem("currentUser")) {
+      window.location.href = "auth.html";
+    }
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "auth.html";
+    }
+    function goBack() {
+      window.location.href = "quizzes.html";
+    }
+    const quizzes = JSON.parse(localStorage.getItem("quizzes")) || [];
+    const quizIndex = parseInt(localStorage.getItem("currentQuizIndex"));
+    if (isNaN(quizIndex) || quizIndex < 0 || quizIndex >= quizzes.length) {
+      alert("Invalid quiz selected.");
+      window.location.href = "quizzes.html";
+    }
+    const quiz = quizzes[quizIndex];
+    const questionResults = document.getElementById("questionResults");
+    const resultSummary = document.getElementById("resultSummary");
+    let score = 0;
+    quiz.questions.forEach((q, i) => {
+      const userAnswer = localStorage.getItem("quizAnswer_" + i);
+      const isCorrect = parseInt(userAnswer) === q.correctAnswer;
+      if (isCorrect) score++;
+      const div = document.createElement("div");
+      div.classList.add("question-container");
+      const qText = document.createElement("p");
+      qText.textContent = (i + 1) + ". " + q.text;
+      div.appendChild(qText);
+      const ul = document.createElement("ul");
+      q.options.forEach((opt, idx) => {
+        const li = document.createElement("li");
+        li.textContent = opt;
+        if (idx === q.correctAnswer) li.classList.add("correct");
+        if (idx === parseInt(userAnswer) && idx !== q.correctAnswer) li.classList.add("incorrect");
+        ul.appendChild(li);
+      });
+      div.appendChild(ul);
+      questionResults.appendChild(div);
+    });
+    resultSummary.textContent = "You scored " + score + " out of " + quiz.questions.length;
+  </script>
+</body>
+</html>

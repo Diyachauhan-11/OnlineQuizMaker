@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login/Register</title>
+  <style>
+    body {background-color:#e0f7fa; font-family: Arial, sans-serif; padding: 20px;}
+    .container {max-width:400px; margin:auto; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1);}
+    input, button {width:100%; padding:10px; margin:10px 0; font-size:16px;}
+    button {background:#0077cc; color:white; border:none; border-radius:6px; cursor:pointer;}
+    button:hover {background:#005fa3;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login/Register</h2>
+    <input type="text" id="username" placeholder="Enter username" />
+    <button onclick="login()">Login / Register</button>
+  </div>
+  <script>
+    function login() {
+      const username = document.getElementById('username').value.trim();
+      if (!username) {
+        alert('Please enter a username');
+        return;
+      }
+      localStorage.setItem('currentUser', username);
+      alert('Welcome ' + username + '!');
+      window.location.href = 'create.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Available Quizzes</title>
+  <style>
+    body {
+      background-color: #e0f7fa;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      position: relative;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 700px;
+      margin: auto;
+    }
+    button {
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 10px 20px;
+      margin: 8px 0;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    .logout-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      padding: 8px 12px;
+      background: crimson;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      background: #f0f4f8;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+  <div class="container">
+    <h2>Available Quizzes</h2>
+    <ul id="quizList">
+      <li>No quizzes found. Please create some quizzes first.</li>
+    </ul>
+  </div>
+  <script>
+    if (!localStorage.getItem("currentUser")) {
+      window.location.href = "auth.html";
+    }
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "auth.html";
+    }
+    function loadQuizzes() {
+      const quizzes = JSON.parse(localStorage.getItem("quizzes")) || [];
+      const currentUser = localStorage.getItem("currentUser");
+      const filteredQuizzes = quizzes.filter(q => q.user === currentUser);
+      const quizList = document.getElementById("quizList");
+      quizList.innerHTML = "";
+      if (filteredQuizzes.length === 0) {
+        quizList.innerHTML = "<li>No quizzes found. Please create some quizzes first.</li>";
+        return;
+      }
+      filteredQuizzes.forEach((quiz, index) => {
+        const li = document.createElement("li");
+        li.textContent = quiz.title;
+        const takeBtn = document.createElement("button");
+        takeBtn.textContent = "Take Quiz";
+        takeBtn.onclick = () => {
+          localStorage.setItem("currentQuizIndex", index);
+          window.location.href = "result.html";
+        };
+        li.appendChild(takeBtn);
+        quizList.appendChild(li);
+      });
+    }
+    loadQuizzes();
+  </script>
+</body>
+</html>

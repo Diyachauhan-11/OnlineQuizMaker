@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Your Quiz</title>
+  <style>
+    body {
+      background-color: #e0f7fa;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      position: relative;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 700px;
+      margin: auto;
+    }
+    input, textarea, select, button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 12px 0;
+      font-size: 16px;
+    }
+    button {
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    .logout-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      padding: 8px 12px;
+      background: crimson;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+  <div class="container">
+    <h2>Create Your Quiz</h2>
+    <input type="text" id="quizTitle" placeholder="Quiz Title" />
+    <h3>Add a Question</h3>
+    <textarea id="questionText" placeholder="Enter question"></textarea>
+    <input type="text" id="option1" placeholder="Option 1" />
+    <input type="text" id="option2" placeholder="Option 2" />
+    <input type="text" id="option3" placeholder="Option 3" />
+    <input type="text" id="option4" placeholder="Option 4" />
+    <select id="correctAnswer">
+      <option value="">Select Correct Option</option>
+      <option value="0">Option 1</option>
+      <option value="1">Option 2</option>
+      <option value="2">Option 3</option>
+      <option value="3">Option 4</option>
+    </select>
+    <button onclick="addQuestion()">Add Question</button>
+    <button id="saveQuizBtn">Save Quiz</button>
+  </div>
+  <script>
+    if (!localStorage.getItem("currentUser")) {
+      window.location.href = "auth.html";
+    }
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "auth.html";
+    }
+    const questions = [];
+    function addQuestion() {
+      const q = document.getElementById('questionText').value.trim();
+      const o1 = document.getElementById('option1').value.trim();
+      const o2 = document.getElementById('option2').value.trim();
+      const o3 = document.getElementById('option3').value.trim();
+      const o4 = document.getElementById('option4').value.trim();
+      const correct = document.getElementById('correctAnswer').value;
+      if (!q || !o1 || !o2 || !o3 || !o4 || correct === "") {
+        alert("Please fill all fields and select correct answer.");
+        return;
+      }
+      const question = {
+        text: q,
+        options: [o1, o2, o3, o4],
+        correctAnswer: parseInt(correct)
+      };
+      questions.push(question);
+      alert("Question added!");
+      document.getElementById('questionText').value = "";
+      document.getElementById('option1').value = "";
+      document.getElementById('option2').value = "";
+      document.getElementById('option3').value = "";
+      document.getElementById('option4').value = "";
+      document.getElementById('correctAnswer').value = "";
+    }
+    document.getElementById('saveQuizBtn').addEventListener('click', () => {
+      const title = document.getElementById('quizTitle').value.trim();
+      if (!title) {
+        alert("Please enter quiz title.");
+        return;
+      }
+      if (questions.length === 0) {
+        alert("Add at least one question.");
+        return;
+      }
+      const quiz = {
+        title,
+        questions,
+        user: localStorage.getItem("currentUser")
+      };
+      let quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
+      quizzes.push(quiz);
+      localStorage.setItem('quizzes', JSON.stringify(quizzes));
+      alert("Quiz saved!");
+      document.getElementById('quizTitle').value = '';
+      questions.length = 0;
+    });
+  </script>
+</body>
+</html>
