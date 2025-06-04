@@ -1,5 +1,4 @@
 # OnlineQuizMaker
-# Online Quiz Maker
 
 A simple web application to create and take quizzes with user login and registration.
 
