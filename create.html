@@ -1,130 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Create Your Quiz</title>
-  <style>
-    body {
-      background-color: #e0f7fa;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      position: relative;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      max-width: 700px;
-      margin: auto;
-    }
-    input, textarea, select, button {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      margin: 12px 0;
-      font-size: 16px;
-    }
-    button {
-      background-color: #0077cc;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-    button:hover {
-      background-color: #005fa3;
-    }
-    .logout-btn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      padding: 8px 12px;
-      background: crimson;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Create Your Quiz</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #e0f7fa;
+    padding: 20px;
+    max-width: 700px;
+    margin: auto;
+  }
+  h1 {
+    text-align: center;
+    color: #00796b;
+  }
+  input, textarea, button {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+  button {
+    background-color: #00796b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  button:hover {
+    background-color: #004d40;
+  }
+  .question-block {
+    border: 1px solid #004d40;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 6px;
+    background: #b2dfdb;
+  }
+  label {
+    font-weight: bold;
+    display: block;
+    margin-top: 8px;
+  }
+  #questionsList {
+    margin-top: 15px;
+  }
+  #logoutBtn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #c62828;
+  }
+  #quizListLink {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #004d40;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
-  <button class="logout-btn" onclick="logout()">Logout</button>
-  <div class="container">
-    <h2>Create Your Quiz</h2>
-    <input type="text" id="quizTitle" placeholder="Quiz Title" />
-    <h3>Add a Question</h3>
-    <textarea id="questionText" placeholder="Enter question"></textarea>
-    <input type="text" id="option1" placeholder="Option 1" />
-    <input type="text" id="option2" placeholder="Option 2" />
-    <input type="text" id="option3" placeholder="Option 3" />
-    <input type="text" id="option4" placeholder="Option 4" />
-    <select id="correctAnswer">
-      <option value="">Select Correct Option</option>
-      <option value="0">Option 1</option>
-      <option value="1">Option 2</option>
-      <option value="2">Option 3</option>
-      <option value="3">Option 4</option>
-    </select>
-    <button onclick="addQuestion()">Add Question</button>
-    <button id="saveQuizBtn">Save Quiz</button>
-  </div>
-  <script>
-    if (!localStorage.getItem("currentUser")) {
-      window.location.href = "auth.html";
+
+<button id="logoutBtn">Logout</button>
+
+<h1>Create Your Quiz</h1>
+
+<label for="quizTitle">Quiz Title:</label>
+<input type="text" id="quizTitle" placeholder="Enter Quiz Title" />
+
+<button id="addQuestionBtn">Add Question</button>
+<button id="saveQuizBtn">Save Quiz</button>
+
+<div id="questionsList"></div>
+
+<a id="quizListLink" href="quizzes.html">Go to Quiz List</a>
+
+<script>
+  // Redirect to login if not logged in
+  if (!localStorage.getItem('currentUser')) {
+    window.location.href = 'auth.html';
+  }
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'auth.html';
+  });
+
+  const quizTitleInput = document.getElementById('quizTitle');
+  const addQuestionBtn = document.getElementById('addQuestionBtn');
+  const saveQuizBtn = document.getElementById('saveQuizBtn');
+  const questionsList = document.getElementById('questionsList');
+
+  let questions = [];
+
+  addQuestionBtn.addEventListener('click', () => {
+    addQuestionForm();
+  });
+
+  function addQuestionForm() {
+    const questionIndex = questions.length;
+
+    const div = document.createElement('div');
+    div.classList.add('question-block');
+
+    div.innerHTML = `
+      <label>Question ${questionIndex + 1}:</label>
+      <textarea rows="2" placeholder="Enter question text"></textarea>
+
+      <label>Option 1:</label>
+      <input type="text" placeholder="Option 1" />
+
+      <label>Option 2:</label>
+      <input type="text" placeholder="Option 2" />
+
+      <label>Option 3:</label>
+      <input type="text" placeholder="Option 3" />
+
+      <label>Option 4:</label>
+      <input type="text" placeholder="Option 4" />
+
+      <label>Correct Option Number (1-4):</label>
+      <input type="number" min="1" max="4" placeholder="Enter correct option number" />
+    `;
+
+    questionsList.appendChild(div);
+  }
+
+  saveQuizBtn.addEventListener('click', () => {
+    const title = quizTitleInput.value.trim();
+    if (!title) {
+      alert('Please enter quiz title.');
+      return;
     }
-    function logout() {
-      localStorage.removeItem("currentUser");
-      window.location.href = "auth.html";
+    if (questionsList.children.length === 0) {
+      alert('Please add at least one question.');
+      return;
     }
-    const questions = [];
-    function addQuestion() {
-      const q = document.getElementById('questionText').value.trim();
-      const o1 = document.getElementById('option1').value.trim();
-      const o2 = document.getElementById('option2').value.trim();
-      const o3 = document.getElementById('option3').value.trim();
-      const o4 = document.getElementById('option4').value.trim();
-      const correct = document.getElementById('correctAnswer').value;
-      if (!q || !o1 || !o2 || !o3 || !o4 || correct === "") {
-        alert("Please fill all fields and select correct answer.");
-        return;
+
+    // Gather questions data
+    let valid = true;
+    let newQuestions = [];
+
+    for (let i = 0; i < questionsList.children.length; i++) {
+      const qDiv = questionsList.children[i];
+      const qText = qDiv.querySelector('textarea').value.trim();
+      const opts = Array.from(qDiv.querySelectorAll('input[type="text"]')).map(inp => inp.value.trim());
+      const correctOpt = qDiv.querySelector('input[type="number"]').value.trim();
+
+      if (!qText || opts.some(o => !o) || !correctOpt || correctOpt < 1 || correctOpt > 4) {
+        valid = false;
+        break;
       }
-      const question = {
-        text: q,
-        options: [o1, o2, o3, o4],
-        correctAnswer: parseInt(correct)
-      };
-      questions.push(question);
-      alert("Question added!");
-      document.getElementById('questionText').value = "";
-      document.getElementById('option1').value = "";
-      document.getElementById('option2').value = "";
-      document.getElementById('option3').value = "";
-      document.getElementById('option4').value = "";
-      document.getElementById('correctAnswer').value = "";
+
+      newQuestions.push({
+        question: qText,
+        options: opts,
+        correct: Number(correctOpt)
+      });
     }
-    document.getElementById('saveQuizBtn').addEventListener('click', () => {
-      const title = document.getElementById('quizTitle').value.trim();
-      if (!title) {
-        alert("Please enter quiz title.");
-        return;
-      }
-      if (questions.length === 0) {
-        alert("Add at least one question.");
-        return;
-      }
-      const quiz = {
-        title,
-        questions,
-        user: localStorage.getItem("currentUser")
-      };
-      let quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
-      quizzes.push(quiz);
-      localStorage.setItem('quizzes', JSON.stringify(quizzes));
-      alert("Quiz saved!");
-      document.getElementById('quizTitle').value = '';
-      questions.length = 0;
+
+    if (!valid) {
+      alert('Please fill all question details correctly.');
+      return;
+    }
+
+    // Save quiz
+    let quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
+    quizzes.push({
+      title: title,
+      questions: newQuestions,
+      createdBy: localStorage.getItem('currentUser')
     });
-  </script>
+
+    localStorage.setItem('quizzes', JSON.stringify(quizzes));
+    alert('Quiz saved successfully!');
+
+    // Reset form
+    quizTitleInput.value = '';
+    questionsList.innerHTML = '';
+  });
+</script>
 </body>
 </html>
